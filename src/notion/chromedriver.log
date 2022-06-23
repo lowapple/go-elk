@@ -1,0 +1,118 @@
+[1653880019.231][INFO]: Starting ChromeDriver 101.0.4951.41 (93c720db8323b3ec10d056025ab95c23a31997c9-refs/branch-heads/4951@{#904}) on port 9515
+[1653880019.231][INFO]: Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1653880020.107][INFO]: [bc0223e32b993b6553ee7107ad075287] COMMAND InitSession {
+   "desiredCapabilities": {
+      "Args": [ "--headless" ],
+      "Platform": "Windows"
+   },
+   "requiredCapabilities": {
+      "Args": [ "--headless", "--no-sandbox", "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0.2 Safari/604.4.7" ]
+   }
+}
+[1653880020.113][INFO]: Populating Preferences file: {
+   "alternate_error_pages": {
+      "enabled": false
+   },
+   "autofill": {
+      "enabled": false
+   },
+   "browser": {
+      "check_default_browser": false
+   },
+   "distribution": {
+      "import_bookmarks": false,
+      "import_history": false,
+      "import_search_engine": false,
+      "make_chrome_default_for_user": false,
+      "skip_first_run_ui": true
+   },
+   "dns_prefetching": {
+      "enabled": false
+   },
+   "profile": {
+      "content_settings": {
+         "pattern_pairs": {
+            "https://*,*": {
+               "media-stream": {
+                  "audio": "Default",
+                  "video": "Default"
+               }
+            }
+         }
+      },
+      "default_content_setting_values": {
+         "geolocation": 1
+      },
+      "default_content_settings": {
+         "geolocation": 1,
+         "mouselock": 1,
+         "notifications": 1,
+         "popups": 1,
+         "ppapi-broker": 1
+      },
+      "password_manager_enabled": false
+   },
+   "safebrowsing": {
+      "enabled": false
+   },
+   "search": {
+      "suggest_enabled": false
+   },
+   "translate": {
+      "enabled": false
+   }
+}
+[1653880020.118][INFO]: Populating Local State file: {
+   "background_mode": {
+      "enabled": false
+   },
+   "ssl": {
+      "rev_checking": {
+         "enabled": false
+      }
+   }
+}
+[1653880020.119][INFO]: Launching chrome: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --allow-pre-commit-input --disable-background-networking --disable-client-side-phishing-detection --disable-default-apps --disable-hang-monitor --disable-popup-blocking --disable-prompt-on-repost --disable-sync --enable-automation --enable-blink-features=ShadowDOMV0 --enable-logging --log-level=0 --no-first-run --no-service-autorun --password-store=basic --remote-debugging-port=0 --test-type=webdriver --use-mock-keychain --user-data-dir=/var/folders/rz/bs616v7531n04bmkg9q_t4qh0000gn/T/.com.google.Chrome.7Le4kf data:,
+[1653880021.417][WARNING]: This version of ChromeDriver has not been tested with Chrome version 102.
+[1653880021.434][INFO]: resolved localhost to ["::1","127.0.0.1","fe80::1"]
+[1653880021.481][INFO]: [bc0223e32b993b6553ee7107ad075287] RESPONSE InitSession {
+   "acceptInsecureCerts": false,
+   "acceptSslCerts": false,
+   "browserConnectionEnabled": false,
+   "browserName": "chrome",
+   "chrome": {
+      "chromedriverVersion": "101.0.4951.41 (93c720db8323b3ec10d056025ab95c23a31997c9-refs/branch-heads/4951@{#904})",
+      "userDataDir": "/var/folders/rz/bs616v7531n04bmkg9q_t4qh0000gn/T/.com.google.Chrome.7Le4kf"
+   },
+   "cssSelectorsEnabled": true,
+   "databaseEnabled": false,
+   "goog:chromeOptions": {
+      "debuggerAddress": "localhost:53632"
+   },
+   "handlesAlerts": true,
+   "hasTouchScreen": false,
+   "javascriptEnabled": true,
+   "locationContextEnabled": true,
+   "mobileEmulationEnabled": false,
+   "nativeEvents": true,
+   "networkConnectionEnabled": false,
+   "pageLoadStrategy": "normal",
+   "platform": "Mac OS X",
+   "proxy": {
+
+   },
+   "rotatable": false,
+   "~~~": "..."
+}
+[1653880021.483][INFO]: [bc0223e32b993b6553ee7107ad075287] COMMAND Navigate {
+   "url": "https://golang.org"
+}
+[1653880021.502][INFO]: Waiting for pending navigations...
+[1653880021.504][INFO]: Done waiting for pending navigations. Status: ok
+[1653880022.970][INFO]: Waiting for pending navigations...
+[1653880024.129][INFO]: Done waiting for pending navigations. Status: ok
+[1653880024.129][INFO]: [bc0223e32b993b6553ee7107ad075287] RESPONSE Navigate
+[1653880024.129][INFO]: [bc0223e32b993b6553ee7107ad075287] COMMAND Quit {
+
+}
+[1653880024.180][INFO]: [bc0223e32b993b6553ee7107ad075287] RESPONSE Quit
