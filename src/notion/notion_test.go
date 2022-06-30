@@ -1,8 +1,8 @@
 package notion
 
 import (
-	"github.com/lowapple/elk/src/common/config"
-	files "github.com/lowapple/elk/src/utils"
+	"github.com/lowapple/go-elk/src/common/config"
+	files "github.com/lowapple/go-elk/src/utils"
 	"testing"
 )
 

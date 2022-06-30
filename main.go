@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/lowapple/elk/src/common/config"
-	"github.com/lowapple/elk/src/notion"
-	files "github.com/lowapple/elk/src/utils"
+	"github.com/lowapple/go-elk/src/common/config"
+	"github.com/lowapple/go-elk/src/notion"
+	files "github.com/lowapple/go-elk/src/utils"
 	"log"
 	"os"
 )

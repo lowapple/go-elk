@@ -6,7 +6,6 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/chromedp/cdproto v0.0.0-20220629234738-4cfc9cdeeb92
 	github.com/chromedp/chromedp v0.8.2
-	github.com/lowapple/elk v0.0.0-20220630064003-66bafd7bc4c0
 	github.com/schollz/progressbar/v3 v3.8.6
 	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
 )

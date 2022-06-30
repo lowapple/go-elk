@@ -1,7 +1,7 @@
 package downloader
 
 import (
-	"github.com/lowapple/elk/src/common/config"
+	"github.com/lowapple/go-elk/src/common/config"
 	"testing"
 )
 

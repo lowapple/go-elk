@@ -7,9 +7,9 @@ import (
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/dom"
 	"github.com/chromedp/chromedp"
-	"github.com/lowapple/elk/src/common/config"
-	"github.com/lowapple/elk/src/common/downloader"
-	"github.com/lowapple/elk/src/utils"
+	"github.com/lowapple/go-elk/src/common/config"
+	"github.com/lowapple/go-elk/src/common/downloader"
+	"github.com/lowapple/go-elk/src/utils"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 
