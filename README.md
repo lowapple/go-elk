@@ -10,7 +10,7 @@ Go 버전 1.18로 작성되었습니다. 현재 하나의 페이지만 지원합
 * [chromedriver](https://chromedriver.chromium.org/downloads)
 
 ```sh
-go install github/lowapple/go-elk@master
+go get github/lowapple/go-elk@latest
 ```
 또는 Golang이 설치가 되어있으면 소스코드를 다운로드하고, 소스코드에서 다음과 같이 실행할 수 있습니다.
 ```sh
