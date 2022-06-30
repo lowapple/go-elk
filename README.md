@@ -20,10 +20,10 @@ go run main.go ...
 ## 시작하기
 
 ```
-elk [OPTIONS] URL 
+go-elk [OPTIONS] URL 
 ```
 ```
-elk "https://lowapple.notion.site/e1db500567ca46bcbb59ed2f575325e4"
+go-elk "https://lowapple.notion.site/e1db500567ca46bcbb59ed2f575325e4"
 ```
 
 ## 옵션
@@ -34,3 +34,4 @@ elk "https://lowapple.notion.site/e1db500567ca46bcbb59ed2f575325e4"
 
 ## 라이선스
 
+[MIT](https://github.com/lowapple/go-elk/blob/master/LICENSE)
