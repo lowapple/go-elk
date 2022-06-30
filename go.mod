@@ -8,7 +8,7 @@ require (
 	github.com/chromedp/chromedp v0.8.2
 	github.com/lowapple/elk v0.0.0-20220630064003-66bafd7bc4c0
 	github.com/schollz/progressbar/v3 v3.8.6
-	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
 )
 
 require (
