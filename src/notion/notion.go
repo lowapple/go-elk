@@ -7,22 +7,27 @@ import (
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/dom"
 	"github.com/chromedp/chromedp"
-	"github.com/lowapple/elk/src/static"
+	"github.com/lowapple/elk/src/common/config"
+	"github.com/lowapple/elk/src/common/downloader"
+	"github.com/lowapple/elk/src/utils"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
+
 	"log"
 	"strings"
 )
 
-type extractor struct {
+type Notion struct {
 }
 
-func New() static.Extractor {
-	return &extractor{}
+func New() *Notion {
+	return &Notion{}
 }
 
-func (e *extractor) Extract(URL string) ([]*static.Data, error) {
+func (e *Notion) Extract(target string) error {
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", true),
-		chromedp.Flag("window-size", "1920,1080"),
+		chromedp.Flag("window-size", "1920,200000"),
 		chromedp.Flag("no-sandbox", true),
 	)
 
@@ -32,30 +37,114 @@ func (e *extractor) Extract(URL string) ([]*static.Data, error) {
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	log.Printf("Parsing page %s", URL)
-	log.Print("Parsing page config ...")
-	err := chromedp.Run(ctx, chromedp.Navigate(URL))
+	log.Printf("Parsing page %s", target)
+	log.Print("Waiting page loaded...")
+	err := chromedp.Run(ctx, chromedp.Navigate(target))
 	if err != nil {
-		return nil, nil
+		return nil
 	}
 	var htmlContent string
 	// 페이지 로딩
-	if err := waitForPageLoaded(ctx, URL); err != nil {
-		return nil, nil
+	if err := processNotionPageLoaded(ctx, target); err != nil {
+		return nil
 	}
 	// HTML 파일 가져오기
-	if err := getHtmlContent(ctx, &htmlContent); err != nil {
-		return nil, nil
+	if err := processNotionPageHtmlContent(ctx, &htmlContent); err != nil {
+		return nil
 	}
-	log.Print(htmlContent)
-	return nil, nil
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlContent))
+	if err != nil {
+		return nil
+	}
+
+	notionDownloader := downloader.New(true)
+	// sheets 추출
+	if err := processSheets(notionDownloader, doc); err != nil {
+		return err
+	}
+	if err := processImages(notionDownloader, doc); err != nil {
+		return err
+	}
+	// inject sheets
+	injectSheets := `
+.notion-frame{
+	width: 100% !important
+}`
+	filePath := fmt.Sprintf(`%s/elk.css`, config.OutputPath)
+	file := files.CreateFile(filePath)
+	err = files.WriteFile(&injectSheets, file)
+	if err != nil {
+		return err
+	}
+	// Add Header
+	var nodeAttrs []html.Attribute
+	nodeAttrs = append(nodeAttrs, html.Attribute{Key: `rel`, Val: `stylesheet`})
+	nodeAttrs = append(nodeAttrs, html.Attribute{Key: `href`, Val: `/elk.css`})
+	node := &html.Node{
+		Type:     html.ElementNode,
+		DataAtom: atom.Link,
+		Data:     "link",
+		Attr:     nodeAttrs,
+	}
+	doc.Find(`head`).AppendNodes(node)
+	// Output index.html
+	filePath = fmt.Sprintf(`%s/index.html`, config.OutputPath)
+	file = files.CreateFile(filePath)
+	htmlContent, err = doc.Html()
+	if err != nil {
+		return err
+	}
+	err = files.WriteFile(&htmlContent, file)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func processImages(downloader *downloader.Struct, doc *goquery.Document) error {
+	links := doc.Find(`img`)
+	links.Each(func(i int, link *goquery.Selection) {
+		src, ok := link.Attr("src")
+		if strings.Contains(src, "data:image") {
+			return
+		}
+		if ok {
+			// 이미지 주소 자체가 파일로 저장하기 적합하지 않기 때문에 이름을 변경해서 저장할 수 있도록 한다
+			path, err := downloader.CacheFile(fmt.Sprintf(`https://www.notion.so%s`, src), config.OutputPath, "jpg")
+			if err != nil {
+				return
+			}
+			link.SetAttr("src", *path)
+		}
+	})
+	return nil
+}
+
+func processSheets(downloader *downloader.Struct, doc *goquery.Document) error {
+	links := doc.Find(`link[rel='stylesheet']`)
+	links.Each(func(_ int, link *goquery.Selection) {
+		href, ok := link.Attr("href")
+		if ok {
+			if strings.HasPrefix(href, "/") {
+				if strings.Contains(href, "vendors~") {
+					return
+				}
+			}
+			path, err := downloader.CacheFile(fmt.Sprintf(`https://www.notion.so%s`, href), config.OutputPath, "css")
+			if err != nil {
+				return
+			}
+			link.SetAttr("href", *path)
+		}
+	})
+	return nil
 }
 
 // 노션 페이지 로딩
 //
 // Return:
 //	- error: 에러 발생
-func waitForPageLoaded(ctx context.Context, URL string) error {
+func processNotionPageLoaded(ctx context.Context, URL string) error {
 	c := chromedp.FromContext(ctx)
 	err := chromedp.Tasks([]chromedp.Action{
 		chromedp.Navigate(URL),
@@ -91,10 +180,10 @@ func waitForPageLoaded(ctx context.Context, URL string) error {
 					idx += 1
 				}
 				loadedScrollersLen := len(loadedScrollers)
-				log.Printf("Waiting for page content to load "+
-					"pending blocks: %d ,"+
-					"loading blocks: %d ,"+
-					"loading scrollers: %d/%d", pendingLen, loadingSpinnersLen, loadedScrollersLen, scrollersLen)
+				//log.Printf("Waiting for page content to load "+
+				//	"pending blocks: %d ,"+
+				//	"loading blocks: %d ,"+
+				//	"loading scrollers: %d/%d", pendingLen, loadingSpinnersLen, loadedScrollersLen, scrollersLen)
 				if pendingLen == 0 && loadingSpinnersLen == 0 && scrollersLen == loadedScrollersLen {
 					return nil
 				}
@@ -107,7 +196,7 @@ func waitForPageLoaded(ctx context.Context, URL string) error {
 	return nil
 }
 
-func getHtmlContent(ctx context.Context, htmlContent *string) error {
+func processNotionPageHtmlContent(ctx context.Context, htmlContent *string) error {
 	c := chromedp.FromContext(ctx)
 	node, err := dom.GetDocument().Do(cdp.WithExecutor(ctx, c.Target))
 	if err != nil {
@@ -119,64 +208,4 @@ func getHtmlContent(ctx context.Context, htmlContent *string) error {
 		return fmt.Errorf("페이지에 연결할 수 없습니다")
 	}
 	return nil
-}
-
-func parsePage(URL string) {
-	log.Printf("Parsing page %s", URL)
-	//logger.Printf("Using page config: %s")
-	load(URL)
-}
-
-// Notion page loaded
-func load(URL string) chromedp.Tasks {
-	return chromedp.Tasks{
-		chromedp.Navigate(URL),
-		// .notion-presence-container loaded
-		chromedp.WaitVisible(`.notion-presence-container`),
-		chromedp.ActionFunc(func(ctx context.Context) error {
-			log.Printf(">>>> .notion-presence-container is visible")
-			return nil
-		}),
-		// if unknown blocks
-
-		chromedp.ActionFunc(func(ctx context.Context) error {
-			node, err := dom.GetDocument().Do(ctx)
-			if err != nil {
-				return nil
-			}
-			do, err := dom.GetOuterHTML().WithNodeID(node.NodeID).Do(ctx)
-			if err != nil {
-				return err
-			}
-			log.Print(do)
-			return nil
-		}),
-	}
-}
-
-func parseURL(URL string) []string {
-	//htmlString, err := request.Request()
-	//if err != nil {
-	//	return nil
-	//}
-	//fmt.Println(htmlString)
-	return nil
-}
-
-// elementScreenshot takes a screenshot of a specific element.
-func elementScreenshot(urlstr, sel string, res *[]byte) chromedp.Tasks {
-	return chromedp.Tasks{
-		chromedp.Navigate(urlstr),
-		chromedp.Screenshot(sel, res, chromedp.NodeVisible),
-	}
-}
-
-// fullScreenshot takes a screenshot of the entire browser viewport.
-//
-// Note: chromedp.FullScreenshot overrides the device's emulation settings. Use
-// device.Reset to reset the emulation and viewport settings.
-func fullScreenshot(quality int, res *[]byte) chromedp.Tasks {
-	return chromedp.Tasks{
-		chromedp.FullScreenshot(res, quality),
-	}
 }
